@@ -21,21 +21,11 @@ var svg = d3.select('body')
 //  - nodes are known by 'id', not by index in array.
 //  - reflexive edges are indicated on the node (as a bold black circle).
 //  - links are always source < target; edge directions are set by 'left' and 'right'.
-/*
-var nodes = [
-    {id: 0, reflexive: false},
-    {id: 1, reflexive: true },
-    {id: 2, reflexive: false}
-  ],
-  lastNodeId = 2,
-  links = [
-    {source: nodes[0], target: nodes[1], left: false, right: true },
-    {source: nodes[1], target: nodes[2], left: false, right: true }
-  ];
-*/
 var nodes = [];
 var links = [];
 var lastNodeId = 0;
+var dampener = 0;
+var graphs = [];
 
 // init D3 force layout
 var force = d3.layout.force()
@@ -392,8 +382,24 @@ function keyup() {
   }
 }
 
+function equalizeValues() {
+  for (var i = 0; i < nodes.length; i++) {
+    nodes[i].value = 12;
+  }
+  restart();
+}
+
+function deleteGraph() {
+  nodes = [];
+  links = [];
+  restart();
+}
+
+function saveGraph() {
+  graphs.push({nodes: nodes, links: links});
+}
+
 function increment() {
-  console.log('increment');
   for (var i = 0; i < nodes.length; i++) {
     var source = nodes[i];
     for (var j = 0; j < source.links.length; j++) {
@@ -408,22 +414,35 @@ function increment() {
     nodes[i].nextValue = 0;
   }
 
-  // update existing nodes (reflexive & selected visual states)
   circle.selectAll('circle')
-    //.attr('r', function(d) { return Math.random() * 40 | 0 });
     .attr('r', function(node) {
-      console.log('r', node.value * 10);
-      return node.value * 10;
+      return node.value * 12 + dampener;
     });
 }
 
-// app starts here
-var button = d3.select('button')
-button.on('click', increment);
-svg.on('mousedown', mousedown)
-  .on('mousemove', mousemove)
-  .on('mouseup', mouseup);
-d3.select(window)
-  .on('keydown', keydown)
-  .on('keyup', keyup);
-restart();
+function init() {
+  $('#dampener').slider({
+    min: 0,
+    max: 10,
+    value: 0,
+    slide: function(event, ui) {
+      dampener = ui.value;
+      $("#dampener-title").text("Dampener: " + ui.value);
+    }
+  });
+
+  // app starts here
+  var incrementButton = $('#increment').on('click', increment);
+  var saveGraphButton = $('#save-graph').on('click', saveGraph);
+  var equalizeButton = $('#equalize-graph').on('click', equalizeValues);
+  var deleteGraphButton = $('#delete-graph').on('click', deleteGraph);
+  svg.on('mousedown', mousedown)
+    .on('mousemove', mousemove)
+    .on('mouseup', mouseup);
+  d3.select(window)
+    .on('keydown', keydown)
+    .on('keyup', keyup);
+  restart();
+}
+
+init();

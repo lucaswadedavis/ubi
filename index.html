@@ -3,13 +3,23 @@
   <head>
     <meta charset="utf-8">
     <title>Directed Graph Editor</title>
+    <link rel='stylesheet' href='./js/jquery-ui.css' />
     <link rel="stylesheet" href="app.css">
   </head>
-  
+
   <body>
-    <button>Increment</button>
+    <div class='wrapper'>
+      <h2 id='dampener-title'>dampener</h2>
+      <div class='slider' id='dampener'></div> 
+    </div>
+   <button id='increment'>Increment</button>
+   <button id='equalize-graph'>Equalize Graph</button>
+   <button id='save-graph'>Save Graph</button>
+   <button id='delete-graph'>Delete Graph</button>
   </body>
 
+  <script type='text/javascript' src='js/jquery-1.11.1.js'></script>
+  <script type='text/javascript' src='js/jquery-ui.js'></script>
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script src="app.js"></script>
 </html>
